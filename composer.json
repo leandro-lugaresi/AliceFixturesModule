@@ -1,0 +1,41 @@
+{
+    "name": "leandro-lugaresi/alice-fixture-module",
+    "description": "ZF2 Module that helps loading fixture data written with the Alice library",
+    "keywords": ["ZF2", "Fixture", "ORM", "ODM", "Alice"],
+    "type": "module",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Leandro Lugaresi",
+            "email": "leandrolugaresi92@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.5.0",
+        "nelmio/alice": "~1.7",
+        "doctrine/doctrine-fixtures-bundle": "~2.2",
+        "doctrine/data-fixtures": "~1.1",
+        "zendframework/zend-modulemanager": "2.*",
+        "zendframework/zend-eventmanager": "2.*",
+        "zendframework/zend-servicemanager": "2.*"
+    },
+    "require-dev": {
+        "symfony/framework-bundle": "~2.1",
+        "symfony/console": "~2.1",
+        "symfony/yaml": "~2.1",
+        "doctrine/orm": "~2.4",
+        "symfony/browser-kit": "~2.1",
+        "symfony/validator": "~2.1",
+        "solarium/solarium": "~3.1",
+        "hautelook/solarium-fixtures": "~1.0"
+    },
+    "suggest": {
+        "doctrine/doctrine-mongo-odm-module": "To add MongoDB fixtures",
+        "doctrine/doctrine/doctrine-orm-module": "To add ORM fixtures"
+    },
+    "autoload": {
+        "psr-0": {
+            "AliceFixtureModule": "src/"
+        }
+    }
+}
