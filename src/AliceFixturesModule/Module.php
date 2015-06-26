@@ -8,6 +8,11 @@ use Zend\ModuleManager\Feature\ConfigProviderInterface;
 use Zend\EventManager\EventInterface;
 use Zend\ModuleManager\ModuleManager;
 use Doctrine\ORM\Tools\Console\ConsoleRunner;
+use Zend\Console\Adapter\AdapterInterface as Console;
+use Zend\Loader\AutoloaderFactory;
+use Zend\Loader\StandardAutoloader;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\ArgvInput;
 
 /**
  * Base module for Alice Fixtures Module.
@@ -18,7 +23,6 @@ use Doctrine\ORM\Tools\Console\ConsoleRunner;
  */
 class Module implements
     AutoloaderProviderInterface,
-    ServiceProviderInterface,
     ConfigProviderInterface
 {
     /**
@@ -27,9 +31,9 @@ class Module implements
     public function getAutoloaderConfig()
     {
         return array(
-            'Zend\Loader\StandardAutoloader' => array(
-                'namespaces' => array(
-                    __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__
+            AutoloaderFactory::STANDARD_AUTOLOADER => array(
+                StandardAutoloader::LOAD_NS => array(
+                    __NAMESPACE__ => __DIR__,
                 ),
             ),
         );
@@ -38,20 +42,49 @@ class Module implements
     /**
      * {@inheritDoc}
      */
-    public function init(ModuleManager $e)
+    public function init(ModuleManager $moduleManager)
     {
-        $events = $e->getEventManager()->getSharedManager();
-
+        $events = $moduleManager->getEventManager()->getSharedManager();
         // Attach to helper set event and load the entity manager helper.
-        $events->attach('doctrine', 'loadCli.post', function (EventInterface $e) {
-            /* @var $cli \Symfony\Component\Console\Application */
-            $cli = $e->getTarget();
+        $events->attach('doctrine', 'loadCli.post', array($this, 'loadCli'));
+    }
 
-            /* @var $sm ServiceLocatorInterface */
-            $sm = $e->getParam('ServiceManager');
-            $em = $cli->getHelperSet()->get('em')->getEntityManager();
-            //Import the commands
-        });
+    /**
+     *
+     * @param Event $event
+     */
+    public function loadCli(EventInterface $event)
+    {
+        $commands = array(
+             new \AliceFixturesModule\Command\AliceFixturesCommand(),
+        );
+
+        foreach ($commands as $command) {
+            $command->getDefinition()->addOption(
+                new InputOption(
+                    'objectmanager',
+                    null,
+                    InputOption::VALUE_OPTIONAL,
+                    'The name of the documentmanager to use. If none is provided, it will use odm_default.'
+                )
+            );
+        }
+
+        $cli = $event->getTarget();
+        $cli->addCommands($commands);
+
+        $arguments = new ArgvInput();
+        $objectManagerName = $arguments->getParameterOption('--objectmanager');
+        $objectManagerName = !empty($objectManagerName) ? $objectManagerName : 'doctrine.documentmanager.odm_default';
+
+        $serviceManager = $event->getParam('ServiceManager');
+
+        if ($serviceManager->has($objectManagerName)) {
+            $objectManager = $serviceManager->get($objectManagerName);
+
+            $objectHelper  = new \AliceFixturesModule\Helper\ObjectManagerHelper($objectManager);
+            $cli->getHelperSet()->set($objectHelper, 'objectManager');
+        }
     }
 
     /**
@@ -61,5 +94,4 @@ class Module implements
     {
         return include __DIR__ . '/../../config/module.config.php';
     }
-
 }

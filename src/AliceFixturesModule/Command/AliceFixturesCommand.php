@@ -1,6 +1,6 @@
 <?php
 
-namespace AliceFixtures\Command;
+namespace AliceFixturesModule\Command;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -19,10 +19,10 @@ class AliceFixturesCommand extends Command
             ->setName('alice:fixtures:load')
             ->setDescription('Automaticly load alice fixtures files.')
             ->addOption(
-                'bundle',
+                'module',
                 'b',
                 InputOption::VALUE_OPTIONAL|InputOption::VALUE_IS_ARRAY,
-                'Bundles where fixtures shouls be loaded'
+                'Modules where fixtures shouls be loaded'
             )
             ->addOption(
                 'filter',
@@ -52,7 +52,8 @@ class AliceFixturesCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $dm = $this->getHelper('objectManager')->getObjectManager();
         
-    }
 
+    }
 }
