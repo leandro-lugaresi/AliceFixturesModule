@@ -55,9 +55,12 @@ class Module implements
      */
     public function loadCli(EventInterface $event)
     {
-        $commands = array(
-             new \AliceFixturesModule\Command\AliceFixturesCommand(),
-        );
+        $serviceManager = $event->getParam('ServiceManager');
+
+        $commands = [
+            new \AliceFixturesModule\Command\AliceFixturesCommand(array())
+            //$serviceManager->get('AliceFixturesCommand'),
+        ];
 
         foreach ($commands as $command) {
             $command->getDefinition()->addOption(
@@ -76,8 +79,6 @@ class Module implements
         $arguments = new ArgvInput();
         $objectManagerName = $arguments->getParameterOption('--objectmanager');
         $objectManagerName = !empty($objectManagerName) ? $objectManagerName : 'doctrine.documentmanager.odm_default';
-
-        $serviceManager = $event->getParam('ServiceManager');
 
         if ($serviceManager->has($objectManagerName)) {
             $objectManager = $serviceManager->get($objectManagerName);

@@ -1,24 +1,14 @@
-<?php 
+<?php
 
 return [
-	'controllers' => [
-        'invokables' => [
-            'AliceFixturesModule\Controller\AliceFixtures'        => 'AliceFixturesModule\Controller\AliceFixturesController',
+    'service_manager' => [
+        'factories' => [
+            'AliceFixturesCommand' => 'AliceFixturesModule\Command\AliceFixturesCommandFactory'
         ],
     ],
-	'console' => [
-        'router' => [
-            'routes' => [
-                'import-alice' => [
-                    'options' => [
-                        'route'    => 'fixtures load alice [--filter=] [--module=] [--locale=] [--conection=]',
-                        'defaults' => [
-                            'controller' => 'AliceFixturesModule\Controller\AliceFixtures',
-                            'action'     => 'aliceLoad'
-                        ]
-                    ]
-                ]
-            ]
-        ]
+    'alice' => [
+        'fixtures' => [
+            'modules' => [],
+        ],
     ],
 ];

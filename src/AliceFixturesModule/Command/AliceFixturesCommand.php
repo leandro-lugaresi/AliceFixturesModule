@@ -10,6 +10,14 @@ use Symfony\Component\Console\Input\InputOption;
 
 class AliceFixturesCommand extends Command
 {
+    protected $allowedModules;
+
+    public function __construct(array $allowedModules)
+    {
+        parent::__construct();
+        $this->allowedModules = $allowedModules;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -31,20 +39,12 @@ class AliceFixturesCommand extends Command
                 'Filter importable files via name suffix (dev => *.dev.yml).'
             )
             ->addOption(
-                'connection',
-                'c',
-                InputOption::VALUE_OPTIONAL,
-                'Doctrine connection to use',
-                'default'
-            )
-            ->addOption(
                 'locale',
                 'l',
                 InputOption::VALUE_OPTIONAL,
                 'Locale for faked fixtures',
                 'en_US'
-            )
-        ;
+            );
     }
 
     /**
@@ -52,8 +52,48 @@ class AliceFixturesCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $dm = $this->getHelper('objectManager')->getObjectManager();
-        
+        $objectManager = $this->getHelper('objectManager')->getObjectManager();
+        $modules = array();
+        $filters = array();
 
+        if (true === $input->hasOption('module')) {
+            $modules = $input->getOption('module');
+            $modules = $this->resolveModules($modules);
+        }
+
+        if (true === empty($modules)) {
+            $modules = $this->allowedModules;
+        }
+
+        if (true === $input->hasOption('filter')) {
+            $filters = array_map(
+                function ($filter) {
+                    return sprintf('*.%s.yml', $filter);
+                },
+                $input->getOption('filter')
+            );
+        }
+
+        if (true === empty($filters)) {
+            $filters = ['*.yml'];
+        }
+
+    }
+
+    private function resolveModules($names)
+    {
+        $result = array();
+        foreach ($names as $name) {
+            if (false === array_key_exists($name, $this->allowedModules)) {
+                throw new \RuntimeException(sprintf(
+                    'Module named "%s" not found. "%s", available.',
+                    $name,
+                    implode('", "', array_keys($this->allowedModules))
+                ));
+            }
+            $result[$name] = $this->allowedModules[$name];
+        }
+
+        return $result;
     }
 }
