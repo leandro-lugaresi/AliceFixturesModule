@@ -58,8 +58,8 @@ class Module implements
         $serviceManager = $event->getParam('ServiceManager');
 
         $commands = [
-            new \AliceFixturesModule\Command\AliceFixturesCommand(array())
-            //$serviceManager->get('AliceFixturesCommand'),
+            //new \AliceFixturesModule\Command\AliceFixturesCommand(array())
+            $serviceManager->get('AliceFixturesModule\Command\AliceFixturesCommand'),
         ];
 
         foreach ($commands as $command) {
@@ -78,7 +78,7 @@ class Module implements
 
         $arguments = new ArgvInput();
         $objectManagerName = $arguments->getParameterOption('--objectmanager');
-        $objectManagerName = !empty($objectManagerName) ? $objectManagerName : 'doctrine.documentmanager.odm_default';
+        $objectManagerName = !empty($objectManagerName) ? $objectManagerName : 'doctrine.entitymanager.odm_default';
 
         if ($serviceManager->has($objectManagerName)) {
             $objectManager = $serviceManager->get($objectManagerName);

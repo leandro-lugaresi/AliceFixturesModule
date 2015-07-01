@@ -17,48 +17,33 @@
  * <http://www.doctrine-project.org>.
  */
 
-namespace AliceFixturesModule\Helper;
+namespace AliceFixturesModuleTest\Util;
 
-use Doctrine\CobjectManagermon\Persistence\ObjectManager;
-use Symfony\CobjectManagerponent\Console\Helper\Helper;
+use Zend\Test\Util\ModuleLoader;
 
 /**
- * Symfony console cobjectManagerponent helper for accessing a ObjectManager instances.
+ * Utility used to retrieve a module manager
  *
- * @author Leandro Lugaresi <leandrolugaresi92@gmail.cobjectManager>
+ * @license MIT
+ * @author Leandro Lugaresi <leandrolugaresi92@gmail.com>
  */
-class ObjectManagerHelper extends Helper
+class ModuleLoaderFactory
 {
-    protected $objectManager;
+    /**
+     * @var array
+     */
+    protected static $config;
 
     /**
-     * Constructor.
-     *
-     * @param DocumentManager $dm
+     * @param array $config
      */
-    public function __construct(ObjectManager $objectManager)
+    public static function setConfig(array $config)
     {
-        $this->objectManager = $objectManager;
+        static::$config = $config;
     }
 
-    /**
-     * Get the ObjectManager instance.
-     *
-     * @return DocumentManager
-     */
-    public function getObjectManager()
+    public static function getModuleLoader()
     {
-        return $this->objectManager;
-    }
-
-    /**
-     * Get the canonical name of this helper.
-     *
-     * @see \Symfony\CobjectManagerponent\Console\Helper\HelperInterface::getName()
-     * @return string
-     */
-    public function getName()
-    {
-        return 'objectManager';
+        return new ModuleLoader(static::$config);
     }
 }

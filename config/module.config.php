@@ -3,7 +3,8 @@
 return [
     'service_manager' => [
         'factories' => [
-            'AliceFixturesCommand' => 'AliceFixturesModule\Command\AliceFixturesCommandFactory'
+            'AliceFixturesModule\Command\AliceFixturesCommand' => 'AliceFixturesModule\Factory\AliceFixturesCommandFactory',
+            'AliceFixturesModule\AliceLoader' => 'AliceFixturesModule\Factory\AliceLoaderFactory',
         ],
     ],
     'alice' => [

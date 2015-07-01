@@ -7,14 +7,17 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
+use AliceFixturesModule\AliceLoader;
 
 class AliceFixturesCommand extends Command
 {
     protected $allowedModules;
+    protected $loader;
 
-    public function __construct(array $allowedModules)
+    public function __construct(AliceLoader $loader, array $allowedModules)
     {
         parent::__construct();
+        $this->loader = $loader;
         $this->allowedModules = $allowedModules;
     }
 
@@ -76,6 +79,15 @@ class AliceFixturesCommand extends Command
 
         if (true === empty($filters)) {
             $filters = ['*.yml'];
+        }
+
+        foreach ($modules as $module) {
+            $this->loader->loadFixtures(
+                $module,
+                $filters,
+                $objectManager,
+                $input->getOption('locale')
+            );
         }
 
     }
